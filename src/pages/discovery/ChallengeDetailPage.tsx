@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
@@ -138,15 +140,37 @@ const rankClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  approved: "Approve",
-  pending: "Pending",
-  rejected: "Reject",
+  approved: "Approve", pending: "Pending", rejected: "Reject",
 };
 const statusVariant: Record<string, "approved" | "pending" | "rejected"> = {
-  approved: "approved",
-  pending: "pending",
-  rejected: "rejected",
+  approved: "approved", pending: "pending", rejected: "rejected",
 };
+
+type RewardRow = { rank: string; vayla: string; nft: string; bold: boolean };
+const REWARD_STRUCTURE: RewardRow[] = [
+  { rank: "🥇 1st Place", vayla: "2,000 VAYLA", nft: "Gold Champion", bold: true },
+  { rank: "🥈 2nd Place", vayla: "1,200 VAYLA", nft: "Silver Star", bold: true },
+  { rank: "🥉 3rd Place", vayla: "800 VAYLA", nft: "Bronze Beat", bold: true },
+  { rank: "4~5위", vayla: "각 300 VAYLA", nft: "Top 5 Badge", bold: false },
+  { rank: "Spotlight", vayla: "100 VAYLA", nft: "Spotlight Pick", bold: false },
+];
+const rewardColumns: ColumnDef<RewardRow, unknown>[] = [
+  { accessorKey: "rank", header: "Rank", cell: ({ row }) => <span className={row.original.bold ? "font-bold text-sm" : "text-sm"}>{row.original.rank}</span> },
+  { accessorKey: "vayla", header: "VAYLA Reward", cell: ({ getValue }) => <span className="text-sm">{getValue() as string}</span> },
+  { accessorKey: "nft", header: "NFT Badge", cell: ({ getValue }) => <span className="text-sm">{getValue() as string}</span> },
+];
+
+type TrackItem = (typeof TRACK_LIST)[number];
+const trackColumns: ColumnDef<TrackItem, unknown>[] = [
+  { accessorKey: "name", header: "Track", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332]">{getValue() as string}</span> },
+  { accessorKey: "artist", header: "Artist" },
+  { accessorKey: "genre", header: "Genre", cell: ({ getValue }) => <span className="inline-block px-2.5 py-[3px] bg-gray-100 rounded-[5px] text-[11px] font-semibold text-gray-600">{getValue() as string}</span> },
+  { accessorKey: "len", header: "Length" },
+  { accessorKey: "date", header: "Submission Date", cell: ({ getValue }) => <span className="text-xs text-gray-400">{getValue() as string}</span> },
+  { accessorKey: "status", header: "Status", cell: ({ row }) => <StatusBadge variant={statusVariant[row.original.status]} label={statusLabel[row.original.status]} /> },
+  { accessorKey: "votes", header: "Vote Count", cell: ({ getValue }) => { const v = getValue(); return v != null ? <span className="font-bold text-[#00A88A]">{v as number}</span> : <span className="text-gray-300">-</span>; } },
+  { accessorKey: "reviewer", header: "Reviewer", cell: ({ getValue }) => <span className="text-xs text-gray-500">{getValue() as string}</span> },
+];
 
 export default function ChallengeDetailPage() {
   const [activeTab, setActiveTab] = useState<TabId>("detail");
@@ -295,68 +319,7 @@ export default function ChallengeDetailPage() {
                     </div>
                   </div>
                 </div>
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr>
-                      {["Rank", "VAYLA Reward", "NFT Badge"].map((h) => (
-                        <th
-                          key={h}
-                          className="bg-gray-50 p-3 text-left text-xs font-semibold text-gray-600 border border-gray-200"
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      {
-                        rank: "🥇 1st Place",
-                        vayla: "2,000 VAYLA",
-                        nft: "Gold Champion",
-                        bold: true,
-                      },
-                      {
-                        rank: "🥈 2nd Place",
-                        vayla: "1,200 VAYLA",
-                        nft: "Silver Star",
-                        bold: true,
-                      },
-                      {
-                        rank: "🥉 3rd Place",
-                        vayla: "800 VAYLA",
-                        nft: "Bronze Beat",
-                        bold: true,
-                      },
-                      {
-                        rank: "4~5위",
-                        vayla: "각 300 VAYLA",
-                        nft: "Top 5 Badge",
-                        bold: false,
-                      },
-                      {
-                        rank: "Spotlight",
-                        vayla: "100 VAYLA",
-                        nft: "Spotlight Pick",
-                        bold: false,
-                      },
-                    ].map((row, i) => (
-                      <tr key={i}>
-                        <td
-                          className={`p-3 border border-gray-200 text-sm ${row.bold ? "font-bold" : ""}`}
-                        >
-                          {row.rank}
-                        </td>
-                        <td className="p-3 border border-gray-200 text-sm">
-                          {row.vayla}
-                        </td>
-                        <td className="p-3 border border-gray-200 text-sm">
-                          {row.nft}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <DataTable columns={rewardColumns} data={REWARD_STRUCTURE} />
               </div>
             </div>
           </div>
@@ -473,73 +436,7 @@ export default function ChallengeDetailPage() {
                 All Review Pages →
               </button>
             </div>
-            <div className="overflow-x-auto">
-              <table
-                className="w-full border-collapse text-sm"
-                style={{ minWidth: 900 }}
-              >
-                <thead>
-                  <tr className="bg-gray-50">
-                    {[
-                      "Track",
-                      "Artist",
-                      "Genre",
-                      "Length",
-                      "Submission Date",
-                      "Status",
-                      "Vote Count",
-                      "Reviewer",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        className="px-3.5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap border-b border-gray-100"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {TRACK_LIST.map((t, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-3.5 py-3.5 font-semibold text-[#1A2332] border-b border-gray-50">
-                        {t.name}
-                      </td>
-                      <td className="px-3.5 py-3.5 border-b border-gray-50">
-                        {t.artist}
-                      </td>
-                      <td className="px-3.5 py-3.5 border-b border-gray-50">
-                        <span className="inline-block px-2.5 py-[3px] bg-gray-100 rounded-[5px] text-[11px] font-semibold text-gray-600">
-                          {t.genre}
-                        </span>
-                      </td>
-                      <td className="px-3.5 py-3.5 border-b border-gray-50">
-                        {t.len}
-                      </td>
-                      <td className="px-3.5 py-3.5 text-xs text-gray-400 border-b border-gray-50">
-                        {t.date}
-                      </td>
-                      <td className="px-3.5 py-3.5 border-b border-gray-50">
-                        <StatusBadge
-                          variant={statusVariant[t.status]}
-                          label={statusLabel[t.status]}
-                        />
-                      </td>
-                      <td className="px-3.5 py-3.5 font-bold text-[#00A88A] border-b border-gray-50">
-                        {t.votes != null ? (
-                          t.votes
-                        ) : (
-                          <span className="text-gray-300">-</span>
-                        )}
-                      </td>
-                      <td className="px-3.5 py-3.5 text-xs text-gray-500 border-b border-gray-50">
-                        {t.reviewer}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable columns={trackColumns} data={TRACK_LIST} minWidth={900} />
           </div>
         </div>
       )}

@@ -1,3 +1,5 @@
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { KpiCard } from "@/components/ui/KpiCard";
 import type { PageId } from "@/types/navigation";
@@ -5,6 +7,23 @@ import type { PageId } from "@/types/navigation";
 interface Props {
   onNavigate: (id: PageId) => void;
 }
+
+type ParticipantRow = { name: string; wallet: string; amount: string; date: string; tx: string; status: "active" | "pending" };
+const PARTICIPANTS: ParticipantRow[] = [
+  { name: "Alex Kim", wallet: "0x7a3B...9f2E", amount: "5,000 USDT", date: "2026-04-15 14:23", tx: "0xabc...def", status: "active" },
+  { name: "Sarah J", wallet: "0x4c2D...8b1A", amount: "2,500 USDT", date: "2026-04-15 11:45", tx: "0x123...789", status: "active" },
+  { name: "Michel Lee", wallet: "0x9d5e...c4f3", amount: "7,500 USDT", date: "2026-04-15 09:30", tx: "0x456...012", status: "active" },
+  { name: "Jun Park", wallet: "0x2b8c...e6d1", amount: "3,250 USDT", date: "2026-04-14 16:20", tx: "0x789...345", status: "active" },
+  { name: "Emily Chen", wallet: "0x5f1a...b7c2", amount: "1,500 USDT", date: "2026-04-14 13:15", tx: "0xdef...ghi", status: "pending" },
+];
+const participantColumns: ColumnDef<ParticipantRow, unknown>[] = [
+  { accessorKey: "name", header: "Participant", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332] text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "wallet", header: "Wallet Address", cell: ({ getValue }) => <span className="font-mono text-[11px] text-gray-500">{getValue() as string}</span> },
+  { accessorKey: "amount", header: "Amount", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332] text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "date", header: "Date", cell: ({ getValue }) => <span className="text-[12px] text-gray-400">{getValue() as string}</span> },
+  { accessorKey: "tx", header: "TX Hash", cell: ({ getValue }) => <span className="font-mono text-[11px] text-[#00C9A7]">{getValue() as string}</span> },
+  { accessorKey: "status", header: "Status", cell: ({ row }) => <StatusBadge variant={row.original.status} label={row.original.status === "active" ? "Confirmed" : "Pending"} /> },
+];
 
 export default function BoostDetailPage({ onNavigate }: Props) {
   return (
@@ -181,117 +200,12 @@ export default function BoostDetailPage({ onNavigate }: Props) {
                 </button>
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    {[
-                      "Participant",
-                      "Wallet Address",
-                      "Amount",
-                      "Date",
-                      "TX Hash",
-                      "Status",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide border-b border-gray-100 bg-gray-50 whitespace-nowrap"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    {
-                      name: "Alex Kim",
-                      wallet: "0x7a3B...9f2E",
-                      amount: "5,000 USDT",
-                      date: "2026-04-15 14:23",
-                      tx: "0xabc...def",
-                      status: "active" as const,
-                    },
-                    {
-                      name: "Sarah J",
-                      wallet: "0x4c2D...8b1A",
-                      amount: "2,500 USDT",
-                      date: "2026-04-15 11:45",
-                      tx: "0x123...789",
-                      status: "active" as const,
-                    },
-                    {
-                      name: "Michel Lee",
-                      wallet: "0x9d5e...c4f3",
-                      amount: "7,500 USDT",
-                      date: "2026-04-15 09:30",
-                      tx: "0x456...012",
-                      status: "active" as const,
-                    },
-                    {
-                      name: "Jun Park",
-                      wallet: "0x2b8c...e6d1",
-                      amount: "3,250 USDT",
-                      date: "2026-04-14 16:20",
-                      tx: "0x789...345",
-                      status: "active" as const,
-                    },
-                    {
-                      name: "Emily Chen",
-                      wallet: "0x5f1a...b7c2",
-                      amount: "1,500 USDT",
-                      date: "2026-04-14 13:15",
-                      tx: "0xdef...ghi",
-                      status: "pending" as const,
-                    },
-                  ].map((row, i) => (
-                    <tr
-                      key={i}
-                      className="hover:bg-gray-50 border-b border-gray-50 last:border-0"
-                    >
-                      <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                        {row.name}
-                      </td>
-                      <td className="px-4 py-3.5 font-mono text-[11px] text-gray-500">
-                        {row.wallet}
-                      </td>
-                      <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                        {row.amount}
-                      </td>
-                      <td className="px-4 py-3.5 text-[12px] text-gray-400">
-                        {row.date}
-                      </td>
-                      <td className="px-4 py-3.5 font-mono text-[11px] text-[#00C9A7]">
-                        {row.tx}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <StatusBadge
-                          variant={row.status}
-                          label={
-                            row.status === "active" ? "Confirmed" : "Pending"
-                          }
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-              <span className="text-[13px] text-gray-400">
-                1 - 5 / 1,847 users
-              </span>
-              <div className="flex gap-1">
-                {["‹", "1", "2", "3", "...", "369", "›"].map((p, i) => (
-                  <button
-                    key={i}
-                    className={`w-[34px] h-[34px] rounded-lg border text-[13px] font-medium flex items-center justify-center transition-all ${p === "1" ? "bg-[#00C9A7] border-[#00C9A7] text-white" : "border-gray-200 text-gray-600 hover:border-[#00C9A7] hover:text-[#00C9A7]"}`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <DataTable
+              columns={participantColumns}
+              data={PARTICIPANTS}
+              pageSize={5}
+              totalLabel="1 - 5 / 1,847 users"
+            />
           </div>
 
           <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
@@ -271,6 +273,35 @@ const GENRES = [
   },
 ];
 
+type GenreRow = (typeof GENRES)[number];
+
+const genreColumns: ColumnDef<GenreRow, unknown>[] = [
+  { accessorKey: "id", header: "Genre ID", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332]">{getValue() as string}</span> },
+  { accessorKey: "name", header: "Genre Name", cell: ({ getValue }) => <span className="font-bold text-[#1A2332] text-sm">{getValue() as string}</span> },
+  { accessorKey: "desc", header: "Description", cell: ({ getValue }) => <span className="text-xs text-gray-500 max-w-[200px] block">{getValue() as string}</span> },
+  { accessorKey: "challenges", header: "Challenge", cell: ({ getValue }) => <span className="font-bold text-blue-500 cursor-pointer hover:underline">{getValue() as number}</span> },
+  { accessorKey: "tracks", header: "Track", cell: ({ getValue }) => <span className="font-bold text-blue-500 cursor-pointer hover:underline">{getValue() as number}</span> },
+  { accessorKey: "order", header: "Order", cell: ({ getValue }) => <span className="inline-flex items-center justify-center w-7 h-7 bg-[#1A2332] text-white rounded-[6px] text-sm font-extrabold">{getValue() as number}</span> },
+  { accessorKey: "active", header: "Status", cell: ({ getValue }) => <StatusBadge variant={(getValue() as boolean) ? "active" : "inactive"} label={(getValue() as boolean) ? "Active" : "Inactive"} /> },
+  { accessorKey: "editor", header: "Editor", cell: ({ getValue }) => <span className="text-xs">{getValue() as string}</span> },
+  { accessorKey: "lastEdit", header: "Final Edit", cell: ({ getValue }) => <span className="text-xs whitespace-pre-line">{getValue() as string}</span> },
+  {
+    id: "action",
+    header: "Action",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="flex gap-1 flex-nowrap">
+        <button className="px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">Edit</button>
+        {row.original.active
+          ? <button className="px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 bg-white text-gray-500 hover:bg-gray-50">Inactive화</button>
+          : <button className="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600">Active화</button>
+        }
+        <button className="px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">Details</button>
+      </div>
+    ),
+  },
+];
+
 export default function GenreManagementPage() {
   const [activeFilter, setActiveFilter] = useState("All");
 
@@ -356,93 +387,11 @@ export default function GenreManagementPage() {
           />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-gray-50">
-                {[
-                  "Genre ID",
-                  "Genre Name",
-                  "Description",
-                  "Challenge",
-                  "Track",
-                  "Order",
-                  "Status",
-                  "Editor",
-                  "Final Edit",
-                  "Action",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-3.5 py-3 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide whitespace-nowrap"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {GENRES.map((row) => (
-                <tr
-                  key={row.id}
-                  className={`hover:bg-gray-50 ${!row.active ? "opacity-55 hover:opacity-75" : ""}`}
-                >
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 font-semibold text-[#1A2332]">
-                    {row.id}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 font-bold text-[#1A2332] text-sm">
-                    {row.name}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 text-xs text-gray-500 max-w-[200px]">
-                    {row.desc}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 font-bold text-blue-500 cursor-pointer hover:underline">
-                    {row.challenges}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 font-bold text-blue-500 cursor-pointer hover:underline">
-                    {row.tracks}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100">
-                    <span className="inline-flex items-center justify-center w-7 h-7 bg-[#1A2332] text-white rounded-[6px] text-sm font-extrabold">
-                      {row.order}
-                    </span>
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100">
-                    <StatusBadge
-                      variant={row.active ? "active" : "inactive"}
-                      label={row.active ? "Active" : "Inactive"}
-                    />
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 text-xs">
-                    {row.editor}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100 text-xs whitespace-pre-line">
-                    {row.lastEdit}
-                  </td>
-                  <td className="px-3.5 py-3.5 border-t border-gray-100">
-                    <div className="flex gap-1 flex-nowrap">
-                      <button className="px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
-                        Edit
-                      </button>
-                      {row.active ? (
-                        <button className="px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 bg-white text-gray-500 hover:bg-gray-50">
-                          Inactive화
-                        </button>
-                      ) : (
-                        <button className="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600">
-                          Active화
-                        </button>
-                      )}
-                      <button className="px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
-                        Details
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={genreColumns}
+          data={GENRES}
+          rowClassName={(row) => !row.original.active ? "opacity-55 hover:opacity-75" : ""}
+        />
       </div>
     </div>
   );

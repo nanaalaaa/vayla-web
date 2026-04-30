@@ -1,6 +1,54 @@
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { NFT_ROWS, REWARD_SUMMARY } from "@/data/discovery";
 import type { PageId } from "@/types/navigation";
+
+type NftRow = (typeof NFT_ROWS)[number];
+
+const nftColumns: ColumnDef<NftRow, unknown>[] = [
+  {
+    accessorKey: "track",
+    header: "Track",
+    cell: ({ getValue }) => <strong className="text-[#1A2332]">{getValue() as string}</strong>,
+  },
+  {
+    accessorKey: "artist",
+    header: "Artist",
+    cell: ({ getValue }) => <span className="text-gray-500">{getValue() as string}</span>,
+  },
+  {
+    accessorKey: "votes",
+    header: "Vote Count",
+    cell: ({ getValue }) => <strong className="text-[#00C9A7]">{getValue() as number}</strong>,
+  },
+  {
+    accessorKey: "nftType",
+    header: "NFT Type",
+    cell: ({ row }) => (
+      <span className={`inline-block px-2.5 py-[3px] rounded-[5px] text-[11px] font-semibold ${row.original.nftClass}`}>
+        {row.original.nftType}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <StatusBadge variant={row.original.status} label={row.original.statusLabel} />
+    ),
+  },
+  {
+    id: "action",
+    header: "Action",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <button className={`px-2.5 py-[5px] rounded-[6px] text-xs font-semibold transition-all ${row.original.actionClass}`}>
+        {row.original.action}
+      </button>
+    ),
+  },
+];
 
 interface Props {
   onNavigate: (page: PageId) => void;
@@ -107,37 +155,7 @@ function RewardStatus({ onNavigate }: Props) {
       </div>
       <div className="p-6">
         <div className="text-[13px] font-semibold text-[#1A2332] mb-3">NFT Publish Pending (5표 or more)</div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                {["Track", "Artist", "Vote Count", "NFT Type", "Status", "Action"].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-[0.5px] border-b border-gray-100 bg-gray-50 whitespace-nowrap">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {NFT_ROWS.map((row, i) => (
-                <tr key={i} className="hover:bg-gray-50">
-                  <td className="px-4 py-[14px] text-[13px] border-b border-gray-50"><strong className="text-[#1A2332]">{row.track}</strong></td>
-                  <td className="px-4 py-[14px] text-[13px] border-b border-gray-50 text-gray-500">{row.artist}</td>
-                  <td className="px-4 py-[14px] text-[13px] border-b border-gray-50"><strong className="text-[#00C9A7]">{row.votes}</strong></td>
-                  <td className="px-4 py-[14px] text-[13px] border-b border-gray-50">
-                    <span className={`inline-block px-2.5 py-[3px] rounded-[5px] text-[11px] font-semibold ${row.nftClass}`}>{row.nftType}</span>
-                  </td>
-                  <td className="px-4 py-[14px] text-[13px] border-b border-gray-50">
-                    <StatusBadge variant={row.status} label={row.statusLabel} />
-                  </td>
-                  <td className="px-4 py-[14px] text-[13px] border-b border-gray-50">
-                    <button className={`px-2.5 py-[5px] rounded-[6px] text-xs font-semibold transition-all ${row.actionClass}`}>{row.action}</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable columns={nftColumns} data={NFT_ROWS} />
 
         <div className="mt-5 p-4 bg-gray-50 rounded-[10px]">
           <div className="text-xs font-semibold text-[#1A2332] mb-[10px]">📊 Reward Summary</div>

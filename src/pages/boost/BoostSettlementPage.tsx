@@ -1,3 +1,5 @@
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { KpiCard } from "@/components/ui/KpiCard";
 import type { PageId } from "@/types/navigation";
@@ -14,13 +16,48 @@ function SettleBadge({ type }: { type: string }) {
     "Refund Completed": "bg-blue-50 text-blue-500",
   };
   return (
-    <span
-      className={`px-2 py-0.5 rounded-[5px] text-[11px] font-semibold ${map[type] ?? "bg-gray-100 text-gray-400"}`}
-    >
+    <span className={`px-2 py-0.5 rounded-[5px] text-[11px] font-semibold ${map[type] ?? "bg-gray-100 text-gray-400"}`}>
       {type}
     </span>
   );
 }
+
+type ParticipantRow = { id: string; user: string; wallet: string; amount: string; status: "normal" | "review" | "rejected"; label: string; settle: string; notes: string; notesColor: string; row: string };
+type ExcludeRow = { typeLabel: string; typeClass: string; ptId: string; user: string; amount: string; reason: string; settle: string; time: string; rowClass: string };
+
+const PARTICIPANTS: ParticipantRow[] = [
+  { id: "PT-1001", user: "user_1024", wallet: "0x71A2...9Fd2", amount: "100 USDT", status: "normal", label: "Normal", settle: "Apply Completed", notes: "-", notesColor: "text-gray-400", row: "" },
+  { id: "PT-1002", user: "user_2291", wallet: "0x43Bc...28Ae", amount: "50 USDT", status: "normal", label: "Normal", settle: "Apply Completed", notes: "-", notesColor: "text-gray-400", row: "" },
+  { id: "PT-1003", user: "user_8754", wallet: "0x992D...7Ac1", amount: "300 USDT", status: "review", label: "Needs Review", settle: "Hold", notes: "Confirm in progress", notesColor: "text-amber-500", row: "border-l-2 border-amber-400 bg-amber-50/30" },
+  { id: "PT-1004", user: "user_4108", wallet: "0x18Df...73Bd", amount: "50 USDT", status: "rejected", label: "Exclude", settle: "Not Applied", notes: "Cancel Request", notesColor: "text-red-500", row: "bg-red-50/30" },
+  { id: "PT-1005", user: "user_6620", wallet: "0x81Bc...19Ac", amount: "200 USDT", status: "normal", label: "Normal", settle: "Apply Completed", notes: "-", notesColor: "text-gray-400", row: "" },
+];
+
+const EXCLUDE_ROWS: ExcludeRow[] = [
+  { typeLabel: "Exclude", typeClass: "bg-red-50 text-red-500", ptId: "PT-1004", user: "user_4108", amount: "50 USDT", reason: "Cancel Request", settle: "Apply Completed", time: "2026-04-16 10:20", rowClass: "bg-red-50/20 border-l-2 border-red-400" },
+  { typeLabel: "Refund", typeClass: "bg-blue-50 text-blue-500", ptId: "PT-1038", user: "user_5521", amount: "250 USDT", reason: "Payment Error", settle: "Refund Completed", time: "2026-04-16 13:05", rowClass: "border-l-2 border-blue-400" },
+  { typeLabel: "Hold", typeClass: "bg-purple-50 text-purple-500", ptId: "PT-1003", user: "user_8754", amount: "300 USDT", reason: "Duplicate Participation Under Review", settle: "Hold", time: "2026-04-17 09:10", rowClass: "border-l-2 border-purple-400 bg-purple-50/20" },
+];
+
+const participantColumns: ColumnDef<ParticipantRow, unknown>[] = [
+  { accessorKey: "id", header: "Participation ID", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332] text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "user", header: "Users ID" },
+  { accessorKey: "wallet", header: "Wallet Address", cell: ({ getValue }) => <span className="font-mono text-[12px] text-gray-500">{getValue() as string}</span> },
+  { accessorKey: "amount", header: "Contribution Amount", cell: ({ getValue }) => <span className="font-semibold text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "status", header: "Status", cell: ({ row }) => <StatusBadge variant={row.original.status} label={row.original.label} /> },
+  { accessorKey: "settle", header: "Settlement Apply", cell: ({ getValue }) => <SettleBadge type={getValue() as string} /> },
+  { accessorKey: "notes", header: "Notes", cell: ({ row }) => <span className={`text-[12px] ${row.original.notesColor}`}>{row.original.notes}</span> },
+];
+
+const excludeColumns: ColumnDef<ExcludeRow, unknown>[] = [
+  { accessorKey: "typeLabel", header: "Type", cell: ({ row }) => <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold ${row.original.typeClass}`}>{row.original.typeLabel}</span> },
+  { accessorKey: "ptId", header: "Participation ID", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332] text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "user", header: "Users ID" },
+  { accessorKey: "amount", header: "Amount", cell: ({ getValue }) => <span className="font-semibold">{getValue() as string}</span> },
+  { accessorKey: "reason", header: "Reason" },
+  { accessorKey: "settle", header: "Process Status", cell: ({ getValue }) => <SettleBadge type={getValue() as string} /> },
+  { accessorKey: "time", header: "Process Time", cell: ({ getValue }) => <span className="text-[12px] text-gray-500">{getValue() as string}</span> },
+];
 
 export default function BoostSettlementPage({ onNavigate }: Props) {
   return (
@@ -212,218 +249,18 @@ export default function BoostSettlementPage({ onNavigate }: Props) {
 
       <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden mb-6">
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <span className="text-base font-bold text-[#1A2332]">
-            📋 Settlement Target Participation History
-          </span>
+          <span className="text-base font-bold text-[#1A2332]">📋 Settlement Target Participation History</span>
           <span className="text-[12px] text-gray-400">Total 5 items</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                {[
-                  "Participation ID",
-                  "Users ID",
-                  "Wallet Address",
-                  "Contribution Amount",
-                  "Status",
-                  "Settlement Apply",
-                  "Notes",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide border-b border-gray-100 bg-gray-50 whitespace-nowrap"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                {
-                  id: "PT-1001",
-                  user: "user_1024",
-                  wallet: "0x71A2...9Fd2",
-                  amount: "100 USDT",
-                  status: "normal" as const,
-                  label: "Normal",
-                  settle: "Apply Completed",
-                  notes: "-",
-                  notesColor: "text-gray-400",
-                  row: "",
-                },
-                {
-                  id: "PT-1002",
-                  user: "user_2291",
-                  wallet: "0x43Bc...28Ae",
-                  amount: "50 USDT",
-                  status: "normal" as const,
-                  label: "Normal",
-                  settle: "Apply Completed",
-                  notes: "-",
-                  notesColor: "text-gray-400",
-                  row: "",
-                },
-                {
-                  id: "PT-1003",
-                  user: "user_8754",
-                  wallet: "0x992D...7Ac1",
-                  amount: "300 USDT",
-                  status: "review" as const,
-                  label: "Needs Review",
-                  settle: "Hold",
-                  notes: "Confirm in progress",
-                  notesColor: "text-amber-500",
-                  row: "border-l-2 border-amber-400 bg-amber-50/30",
-                },
-                {
-                  id: "PT-1004",
-                  user: "user_4108",
-                  wallet: "0x18Df...73Bd",
-                  amount: "50 USDT",
-                  status: "rejected" as const,
-                  label: "Exclude",
-                  settle: "Not Applied",
-                  notes: "Cancel Request",
-                  notesColor: "text-red-500",
-                  row: "bg-red-50/30",
-                },
-                {
-                  id: "PT-1005",
-                  user: "user_6620",
-                  wallet: "0x81Bc...19Ac",
-                  amount: "200 USDT",
-                  status: "normal" as const,
-                  label: "Normal",
-                  settle: "Apply Completed",
-                  notes: "-",
-                  notesColor: "text-gray-400",
-                  row: "",
-                },
-              ].map((row, i) => (
-                <tr
-                  key={i}
-                  className={`hover:bg-gray-50 border-b border-gray-50 last:border-0 cursor-pointer ${row.row}`}
-                >
-                  <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                    {row.id}
-                  </td>
-                  <td className="px-4 py-3.5 text-[13px]">{row.user}</td>
-                  <td className="px-4 py-3.5 font-mono text-[12px] text-gray-500">
-                    {row.wallet}
-                  </td>
-                  <td className="px-4 py-3.5 font-semibold text-[13px]">
-                    {row.amount}
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge variant={row.status} label={row.label} />
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <SettleBadge type={row.settle} />
-                  </td>
-                  <td className={`px-4 py-3.5 text-[12px] ${row.notesColor}`}>
-                    {row.notes}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable columns={participantColumns} data={PARTICIPANTS} rowClassName={(row) => row.original.row} />
       </div>
 
       <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden mb-6">
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <span className="text-base font-bold text-[#1A2332]">
-            ⚠️ Exclude / Refund / Hold History
-          </span>
+          <span className="text-base font-bold text-[#1A2332]">⚠️ Exclude / Refund / Hold History</span>
           <span className="text-[12px] text-gray-400">Total 3 items</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                {[
-                  "Type",
-                  "Participation ID",
-                  "Users ID",
-                  "Amount",
-                  "Reason",
-                  "Process Status",
-                  "Process Time",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide border-b border-gray-100 bg-gray-50 whitespace-nowrap"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-gray-50 border-b border-gray-50 bg-red-50/20 border-l-2 border-red-400">
-                <td className="px-4 py-3.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-red-50 text-red-500">
-                    Exclude
-                  </span>
-                </td>
-                <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                  PT-1004
-                </td>
-                <td className="px-4 py-3.5 text-[13px]">user_4108</td>
-                <td className="px-4 py-3.5 font-semibold">50 USDT</td>
-                <td className="px-4 py-3.5 text-[13px]">Cancel Request</td>
-                <td className="px-4 py-3.5">
-                  <SettleBadge type="Apply Completed" />
-                </td>
-                <td className="px-4 py-3.5 text-[12px] text-gray-500">
-                  2026-04-16 10:20
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-50 border-b border-gray-50 border-l-2 border-blue-400">
-                <td className="px-4 py-3.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-500">
-                    Refund
-                  </span>
-                </td>
-                <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                  PT-1038
-                </td>
-                <td className="px-4 py-3.5 text-[13px]">user_5521</td>
-                <td className="px-4 py-3.5 font-semibold">250 USDT</td>
-                <td className="px-4 py-3.5 text-[13px]">Payment Error</td>
-                <td className="px-4 py-3.5">
-                  <SettleBadge type="Refund Completed" />
-                </td>
-                <td className="px-4 py-3.5 text-[12px] text-gray-500">
-                  2026-04-16 13:05
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-50 border-l-2 border-purple-400 bg-purple-50/20">
-                <td className="px-4 py-3.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-500">
-                    Hold
-                  </span>
-                </td>
-                <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                  PT-1003
-                </td>
-                <td className="px-4 py-3.5 text-[13px]">user_8754</td>
-                <td className="px-4 py-3.5 font-semibold">300 USDT</td>
-                <td className="px-4 py-3.5 text-[13px]">
-                  Duplicate Participation Under Review
-                </td>
-                <td className="px-4 py-3.5">
-                  <SettleBadge type="Hold" />
-                </td>
-                <td className="px-4 py-3.5 text-[12px] text-gray-500">
-                  2026-04-17 09:10
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <DataTable columns={excludeColumns} data={EXCLUDE_ROWS} rowClassName={(row) => row.original.rowClass} />
       </div>
 
       <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden mb-6">

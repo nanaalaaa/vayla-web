@@ -1,4 +1,72 @@
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { TX_DATA, TX_TYPE_STYLE, TX_STATUS_STYLE, QUEUE_ITEMS } from "@/data/dashboard";
+
+type TxRow = (typeof TX_DATA)[number];
+
+const columns: ColumnDef<TxRow, unknown>[] = [
+  {
+    accessorKey: "hash",
+    header: "TX Hash",
+    cell: ({ getValue }) => (
+      <span className="font-mono text-xs text-blue-500 cursor-pointer hover:underline">
+        {getValue() as string}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ getValue }) => {
+      const t = getValue() as string;
+      return (
+        <span className={`px-2.5 py-[3px] rounded-[6px] text-[11px] font-semibold ${TX_TYPE_STYLE[t]}`}>
+          {t === "nft" ? "NFT Mint" : t.charAt(0).toUpperCase() + t.slice(1)}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "from",
+    header: "From / To",
+    cell: ({ getValue }) => (
+      <span className="text-xs text-gray-600">{getValue() as string}</span>
+    ),
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ getValue }) => (
+      <span className="text-gray-600">{getValue() as string}</span>
+    ),
+  },
+  {
+    accessorKey: "statusLabel",
+    header: "Status",
+    cell: ({ row }) => (
+      <span className={`inline-flex items-center gap-1 px-2.5 py-[3px] rounded-[6px] text-[11px] font-semibold ${TX_STATUS_STYLE[row.original.status]}`}>
+        {row.original.statusLabel}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "time",
+    header: "Time",
+    cell: ({ getValue }) => (
+      <span className="text-xs text-gray-500">{getValue() as string}</span>
+    ),
+  },
+  {
+    id: "action",
+    header: "Action",
+    enableSorting: false,
+    cell: () => (
+      <button className="px-2.5 py-1 rounded-[6px] text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
+        Details
+      </button>
+    ),
+  },
+];
 
 export function TxAndQueue() {
   return (
@@ -22,46 +90,9 @@ export function TxAndQueue() {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                {["TX Hash", "Type", "From / To", "Amount", "Status", "Time", "Action"].map((h) => (
-                  <th key={h} className="px-4 py-[10px] text-left text-[11px] font-semibold text-gray-400 uppercase tracking-[0.5px] border-b border-gray-200">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {TX_DATA.map((tx, i) => (
-                <tr key={i} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-[13px] border-b border-gray-100">
-                    <span className="font-mono text-xs text-blue-500 cursor-pointer hover:underline">{tx.hash}</span>
-                  </td>
-                  <td className="px-4 py-3 text-[13px] border-b border-gray-100">
-                    <span className={`px-2.5 py-[3px] rounded-[6px] text-[11px] font-semibold ${TX_TYPE_STYLE[tx.type]}`}>
-                      {tx.type === "nft" ? "NFT Mint" : tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-600 border-b border-gray-100">{tx.from}</td>
-                  <td className="px-4 py-3 text-[13px] text-gray-600 border-b border-gray-100">{tx.amount}</td>
-                  <td className="px-4 py-3 border-b border-gray-100">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-[3px] rounded-[6px] text-[11px] font-semibold ${TX_STATUS_STYLE[tx.status]}`}>
-                      {tx.statusLabel}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-500 border-b border-gray-100">{tx.time}</td>
-                  <td className="px-4 py-3 border-b border-gray-100">
-                    <button className="px-2.5 py-1 rounded-[6px] text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
-                      Details
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+
+        <DataTable columns={columns} data={TX_DATA} />
+
         <button className="block w-full text-center py-3 text-[13px] font-semibold text-[#00C9A7] border-t border-gray-100 hover:bg-[#E6FAF5] transition-colors">
           All Transaction View →
         </button>

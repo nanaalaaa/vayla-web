@@ -1,7 +1,45 @@
 import { useState } from "react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/DataTable";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { KpiCard } from "@/components/ui/KpiCard";
 import type { PageId } from "@/types/navigation";
+
+type ParticipationRow = { user: string; wallet: string; project: string; amount: string; tx: string; date: string; status: "active" | "pending"; revenue: string; revenueColor: string };
+type SettlementRow = { project: string; amount: string; roi: string; roiClass: string; date: string; status: "complete" | "failed"; statusLabel: string };
+
+const PARTICIPATION_DATA: ParticipationRow[] = [
+  { user: "user_jk2845", wallet: "0x7a3b...f21d", project: "Waterbomb 2026", amount: "$500", tx: "0xf8e2...4a1b", date: "04.17 14:32", status: "active", revenue: "+$60", revenueColor: "text-[#00C9A7]" },
+  { user: "user_ryan_seo", wallet: "0x2c8d...e47a", project: "Waterbomb 2026", amount: "$200", tx: "0xa3d1...9c2e", date: "04.17 12:15", status: "active", revenue: "+$24", revenueColor: "text-[#00C9A7]" },
+  { user: "user_hana_k", wallet: "0x91ab...3c7f", project: "MAMA Awards", amount: "$1,000", tx: "0xb7c4...8d3a", date: "04.17 10:48", status: "active", revenue: "+$90", revenueColor: "text-[#00C9A7]" },
+  { user: "user_nova_dj", wallet: "0x4e2f...a91c", project: "Waterbomb 2026", amount: "$300", tx: "0xd5e8...1b4f", date: "04.17 09:22", status: "active", revenue: "+$36", revenueColor: "text-[#00C9A7]" },
+  { user: "user_sakura", wallet: "0x6d1a...b5e2", project: "MAMA Awards", amount: "$150", tx: "0xe9f3...7c2d", date: "04.16 23:10", status: "pending", revenue: "+$13.5", revenueColor: "text-gray-400" },
+];
+
+const SETTLEMENT_DATA: SettlementRow[] = [
+  { project: "K-POP Night Seoul", amount: "$320,000", roi: "+8.2%", roiClass: "bg-[#E6FAF5] text-[#00A88A]", date: "04.10", status: "complete", statusLabel: "Completed" },
+  { project: "BTS Fanmeet Tokyo", amount: "$450,000", roi: "+11.5%", roiClass: "bg-[#E6FAF5] text-[#00A88A]", date: "03.28", status: "complete", statusLabel: "Completed" },
+  { project: "Indie Music Fest", amount: "$85,000", roi: "+5.1%", roiClass: "bg-[#E6FAF5] text-[#00A88A]", date: "03.15", status: "complete", statusLabel: "Completed" },
+  { project: "Summer Sonic KR", amount: "$180,000", roi: "-2.3%", roiClass: "bg-red-50 text-red-500", date: "02.28", status: "failed", statusLabel: "Refund" },
+];
+
+const participationColumns: ColumnDef<ParticipationRow, unknown>[] = [
+  { accessorKey: "user", header: "Participant", cell: ({ row }) => <div><div className="font-semibold text-[#1A2332] text-[13px]">{row.original.user}</div><div className="text-[11px] text-gray-400">{row.original.wallet}</div></div> },
+  { accessorKey: "project", header: "Project", cell: ({ getValue }) => <span className="text-[13px] text-gray-600">{getValue() as string}</span> },
+  { accessorKey: "amount", header: "Amount", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332] text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "tx", header: "TX Hash", cell: ({ getValue }) => <span className="font-mono text-[11px] text-[#00C9A7]">{getValue() as string}</span> },
+  { accessorKey: "date", header: "Participation Date", cell: ({ getValue }) => <span className="text-[12px] text-gray-400">{getValue() as string}</span> },
+  { accessorKey: "status", header: "Status", cell: ({ row }) => <StatusBadge variant={row.original.status as "active" | "pending"} label={row.original.status === "active" ? "Confirm" : "Pending"} /> },
+  { accessorKey: "revenue", header: "Est. Revenue", cell: ({ row }) => <span className={`text-[13px] font-semibold ${row.original.revenueColor}`}>{row.original.revenue}</span> },
+];
+
+const settlementColumns: ColumnDef<SettlementRow, unknown>[] = [
+  { accessorKey: "project", header: "Project", cell: ({ getValue }) => <span className="font-semibold text-[#1A2332] text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "amount", header: "Amount", cell: ({ getValue }) => <span className="text-[13px]">{getValue() as string}</span> },
+  { accessorKey: "roi", header: "ROI", cell: ({ row }) => <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[12px] font-bold ${row.original.roiClass}`}>{row.original.roi}</span> },
+  { accessorKey: "date", header: "Settlement Date", cell: ({ getValue }) => <span className="text-[12px] text-gray-400">{getValue() as string}</span> },
+  { accessorKey: "status", header: "Status", cell: ({ row }) => <StatusBadge variant={row.original.status} label={row.original.statusLabel} /> },
+];
 
 interface Props {
   onNavigate: (id: PageId) => void;
@@ -622,139 +660,12 @@ export default function BoostPage({ onNavigate }: Props) {
             </button>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                {[
-                  "Participant",
-                  "Project",
-                  "Amount",
-                  "TX Hash",
-                  "Participation Date",
-                  "Status",
-                  "Est. Revenue",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide border-b border-gray-100 bg-gray-50 whitespace-nowrap"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                {
-                  user: "user_jk2845",
-                  wallet: "0x7a3b...f21d",
-                  project: "Waterbomb 2026",
-                  amount: "$500",
-                  tx: "0xf8e2...4a1b",
-                  date: "04.17 14:32",
-                  status: "active" as const,
-                  revenue: "+$60",
-                  revenueColor: "text-[#00C9A7]",
-                },
-                {
-                  user: "user_ryan_seo",
-                  wallet: "0x2c8d...e47a",
-                  project: "Waterbomb 2026",
-                  amount: "$200",
-                  tx: "0xa3d1...9c2e",
-                  date: "04.17 12:15",
-                  status: "active" as const,
-                  revenue: "+$24",
-                  revenueColor: "text-[#00C9A7]",
-                },
-                {
-                  user: "user_hana_k",
-                  wallet: "0x91ab...3c7f",
-                  project: "MAMA Awards",
-                  amount: "$1,000",
-                  tx: "0xb7c4...8d3a",
-                  date: "04.17 10:48",
-                  status: "active" as const,
-                  revenue: "+$90",
-                  revenueColor: "text-[#00C9A7]",
-                },
-                {
-                  user: "user_nova_dj",
-                  wallet: "0x4e2f...a91c",
-                  project: "Waterbomb 2026",
-                  amount: "$300",
-                  tx: "0xd5e8...1b4f",
-                  date: "04.17 09:22",
-                  status: "active" as const,
-                  revenue: "+$36",
-                  revenueColor: "text-[#00C9A7]",
-                },
-                {
-                  user: "user_sakura",
-                  wallet: "0x6d1a...b5e2",
-                  project: "MAMA Awards",
-                  amount: "$150",
-                  tx: "0xe9f3...7c2d",
-                  date: "04.16 23:10",
-                  status: "pending" as const,
-                  revenue: "+$13.5",
-                  revenueColor: "text-gray-400",
-                },
-              ].map((row, i) => (
-                <tr
-                  key={i}
-                  className="hover:bg-gray-50 border-b border-gray-50 last:border-0"
-                >
-                  <td className="px-4 py-3.5">
-                    <div className="font-semibold text-[#1A2332] text-[13px]">
-                      {row.user}
-                    </div>
-                    <div className="text-[11px] text-gray-400">
-                      {row.wallet}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5 text-[13px] text-gray-600">
-                    {row.project}
-                  </td>
-                  <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                    {row.amount}
-                  </td>
-                  <td className="px-4 py-3.5 font-mono text-[11px] text-[#00C9A7]">
-                    {row.tx}
-                  </td>
-                  <td className="px-4 py-3.5 text-[12px] text-gray-400">
-                    {row.date}
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge
-                      variant={row.status === "active" ? "active" : "pending"}
-                      label={row.status === "active" ? "Confirm" : "Pending"}
-                    />
-                  </td>
-                  <td
-                    className={`px-4 py-3.5 text-[13px] font-semibold ${row.revenueColor}`}
-                  >
-                    {row.revenue}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-          <span className="text-[13px] text-gray-400">1 - 5 / 538 items</span>
-          <div className="flex gap-1">
-            {["‹", "1", "2", "3", "...", "108", "›"].map((p, i) => (
-              <button
-                key={i}
-                className={`w-[34px] h-[34px] rounded-lg border text-[13px] font-medium flex items-center justify-center transition-all ${p === "1" ? "bg-[#00C9A7] border-[#00C9A7] text-white" : "border-gray-200 text-gray-600 hover:border-[#00C9A7] hover:text-[#00C9A7]"}`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
+        <DataTable
+          columns={participationColumns}
+          data={PARTICIPATION_DATA}
+          pageSize={5}
+          totalLabel="1 - 5 / 538 items"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -764,98 +675,7 @@ export default function BoostPage({ onNavigate }: Props) {
               💰 Settlement History
             </span>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  {[
-                    "Project",
-                    "Amount",
-                    "ROI",
-                    "Settlement Date",
-                    "Status",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide border-b border-gray-100 bg-gray-50 whitespace-nowrap"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="hover:bg-gray-50 border-b border-gray-50">
-                  <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                    K-POP Night Seoul
-                  </td>
-                  <td className="px-4 py-3.5 text-[13px]">$320,000</td>
-                  <td className="px-4 py-3.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[12px] font-bold bg-[#E6FAF5] text-[#00A88A]">
-                      +8.2%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-[12px] text-gray-400">
-                    04.10
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge variant="complete" label="Completed" />
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50 border-b border-gray-50">
-                  <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                    BTS Fanmeet Tokyo
-                  </td>
-                  <td className="px-4 py-3.5 text-[13px]">$450,000</td>
-                  <td className="px-4 py-3.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[12px] font-bold bg-[#E6FAF5] text-[#00A88A]">
-                      +11.5%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-[12px] text-gray-400">
-                    03.28
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge variant="complete" label="Completed" />
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50 border-b border-gray-50">
-                  <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                    Indie Music Fest
-                  </td>
-                  <td className="px-4 py-3.5 text-[13px]">$85,000</td>
-                  <td className="px-4 py-3.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[12px] font-bold bg-[#E6FAF5] text-[#00A88A]">
-                      +5.1%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-[12px] text-gray-400">
-                    03.15
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge variant="complete" label="Completed" />
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-4 py-3.5 font-semibold text-[#1A2332] text-[13px]">
-                    Summer Sonic KR
-                  </td>
-                  <td className="px-4 py-3.5 text-[13px]">$180,000</td>
-                  <td className="px-4 py-3.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[12px] font-bold bg-red-50 text-red-500">
-                      -2.3%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-[12px] text-gray-400">
-                    02.28
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <StatusBadge variant="failed" label="Refund" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <DataTable columns={settlementColumns} data={SETTLEMENT_DATA} />
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
