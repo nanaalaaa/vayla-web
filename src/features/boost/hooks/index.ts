@@ -42,6 +42,21 @@ export const useBoostRisk = createQuery<BoostRiskData>({
   defaultOptions: { staleTime: 60_000 },
 });
 
-export const useCreateBoostProject = createMutation(createBoostProject);
+export const useCreateBoostProject = createMutation({
+  key: BOOST_QUERY_KEYS.projects,
+  fn: createBoostProject,
+  onError: (error) => {
+    console.error("[boost] Failed to create project:", error);
+  },
+});
 
-export const useUpdateBoostProject = createMutation(updateBoostProject);
+export const useUpdateBoostProject = createMutation({
+  key: BOOST_QUERY_KEYS.detail,
+  fn: updateBoostProject,
+  onSuccess: () => {
+    console.info("[boost] Project updated");
+  },
+  onError: (error) => {
+    console.error("[boost] Failed to update project:", error);
+  },
+});

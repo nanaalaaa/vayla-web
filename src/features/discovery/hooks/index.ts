@@ -43,8 +43,32 @@ export const useGenres = createQuery<Genre[]>({
   defaultOptions: { staleTime: 5 * 60_000 },
 });
 
-export const useCreateChallenge = createMutation(createChallenge);
+export const useCreateChallenge = createMutation({
+  key: DISCOVERY_ENDPOINTS.challenges,
+  fn: createChallenge,
+  onError: (error) => {
+    console.error("[discovery] Failed to create challenge:", error);
+  },
+});
 
-export const useApproveTrack = createMutation(approveTrack);
+export const useApproveTrack = createMutation({
+  key: DISCOVERY_ENDPOINTS.trackReviewQueue,
+  fn: approveTrack,
+  onSuccess: () => {
+    console.info("[discovery] Track approved");
+  },
+  onError: (error) => {
+    console.error("[discovery] Failed to approve track:", error);
+  },
+});
 
-export const useRejectTrack = createMutation(rejectTrack);
+export const useRejectTrack = createMutation({
+  key: DISCOVERY_ENDPOINTS.trackReviewQueue,
+  fn: rejectTrack,
+  onSuccess: () => {
+    console.info("[discovery] Track rejected");
+  },
+  onError: (error) => {
+    console.error("[discovery] Failed to reject track:", error);
+  },
+});

@@ -7,6 +7,7 @@ import {
   TagInput,
   UsdtInput,
 } from "../components/FormComponents";
+import { useCreateBoostProject } from "../hooks";
 
 interface Props {
   onNavigate: (id: PageId) => void;
@@ -49,6 +50,16 @@ const MILESTONES = [
 ];
 
 export default function BoostCreatePage({ onNavigate }: Props) {
+  const { mutate: createBoostProject } = useCreateBoostProject({
+    onSuccess: () => {
+      onNavigate("boost");
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
