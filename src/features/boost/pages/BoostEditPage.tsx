@@ -1,6 +1,6 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import type { PageId } from "@/types/navigation";
-import { FormSection, FormGroup, TagInput, UsdtInput } from "@/components/boost/FormComponents";
+import { FormSection, FormGroup, TagInput, UsdtInput } from "../components/FormComponents";
 
 interface Props {
   onNavigate: (id: PageId) => void;

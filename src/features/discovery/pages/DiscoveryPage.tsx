@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { KpiCard } from "@/components/ui/KpiCard";
 import type { PageId } from "@/types/navigation";
-import { ActiveChallenges } from "./discovery/sections/ActiveChallenges";
-import { RealtimeLeaderboard, CurrentSettings, GenreDistribution } from "./discovery/sections/SidebarPanels";
-import { TrackReviewQueue } from "./discovery/sections/TrackReviewQueue";
-import { VotingAndRewards } from "./discovery/sections/VotingAndRewards";
-import { ReviewHistory } from "./discovery/sections/ReviewHistory";
-import { GenreWidget } from "./discovery/sections/GenreWidget";
+import { ActiveChallenges } from "../components/ActiveChallenges";
+import { RealtimeLeaderboard, CurrentSettings, GenreDistribution } from "../components/SidebarPanels";
+import { TrackReviewQueue } from "../components/TrackReviewQueue";
+import { VotingAndRewards } from "../components/VotingAndRewards";
+import { ReviewHistory } from "../components/ReviewHistory";
+import { GenreWidget } from "../components/GenreWidget";
 
 interface Props {
   onNavigate: (page: PageId) => void;

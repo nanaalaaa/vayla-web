@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 
-import DashboardPage from "./pages/DashboardPage";
-import DiscoveryPage from "./pages/DiscoveryPage";
+import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+import DiscoveryPage from "@/features/discovery/pages/DiscoveryPage";
 
-import TrackReviewPage from "./pages/discovery/TrackReviewPage";
-import VoteMonitorPage from "./pages/discovery/VoteMonitorPage";
-import RewardDistributionPage from "./pages/discovery/RewardDistributionPage";
-import ChallengeDetailPage from "./pages/discovery/ChallengeDetailPage";
-import DiscoveryChallengePage from "./pages/discovery/DiscoveryChallengePage";
-import GenreManagementPage from "./pages/discovery/GenreManagementPage";
-import CreateChallengePage from "./pages/discovery/CreateChallengePage";
+import TrackReviewPage from "@/features/discovery/pages/TrackReviewPage";
+import VoteMonitorPage from "@/features/discovery/pages/VoteMonitorPage";
+import RewardDistributionPage from "@/features/discovery/pages/RewardDistributionPage";
+import ChallengeDetailPage from "@/features/discovery/pages/ChallengeDetailPage";
+import DiscoveryChallengePage from "@/features/discovery/pages/DiscoveryChallengePage";
+import GenreManagementPage from "@/features/discovery/pages/GenreManagementPage";
+import CreateChallengePage from "@/features/discovery/pages/CreateChallengePage";
 
-import BoostPage from "./pages/boost/BoostPage";
-import BoostProjectsPage from "./pages/boost/BoostProjectsPage";
-import BoostCreatePage from "./pages/boost/BoostCreatePage";
-import BoostDetailPage from "./pages/boost/BoostDetailPage";
-import BoostEditPage from "./pages/boost/BoostEditPage";
-import BoostParticipantsPage from "./pages/boost/BoostParticipantsPage";
-import BoostSettlementPage from "./pages/boost/BoostSettlementPage";
-import BoostRiskPage from "./pages/boost/BoostRiskPage";
+import BoostPage from "@/features/boost/pages/BoostPage";
+import BoostProjectsPage from "@/features/boost/pages/BoostProjectsPage";
+import BoostCreatePage from "@/features/boost/pages/BoostCreatePage";
+import BoostDetailPage from "@/features/boost/pages/BoostDetailPage";
+import BoostEditPage from "@/features/boost/pages/BoostEditPage";
+import BoostParticipantsPage from "@/features/boost/pages/BoostParticipantsPage";
+import BoostSettlementPage from "@/features/boost/pages/BoostSettlementPage";
+import BoostRiskPage from "@/features/boost/pages/BoostRiskPage";
 
 import type { PageId } from "./types/navigation";
 

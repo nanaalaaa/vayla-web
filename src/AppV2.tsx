@@ -1,8 +1,11 @@
 import type { ComponentType } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { DashboardLayoutV2 } from "./components/layout/DashboardLayoutV2";
 import { routes, flattenRoutes, PAGE_ID_TO_PATH } from "./routes";
 import type { PageId } from "./types/navigation";
+import { PageTransitionMotion } from "@/share/components/PageTransitionMotion";
+import { NotFoundPage } from "@/share/components/NotFoundPage";
+import "./index.css";
 
 function NavigatableRoute({
   component: Component,
@@ -21,10 +24,7 @@ export default function AppV2() {
 
   return (
     <DashboardLayoutV2>
-      <div
-        key={location.pathname}
-        className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
-      >
+      <PageTransitionMotion transitionKey={location.pathname}>
         <Routes>
           {flatRoutes.map((route) => (
             <Route
@@ -33,9 +33,9 @@ export default function AppV2() {
               element={<NavigatableRoute component={route.component} />}
             />
           ))}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </div>
+      </PageTransitionMotion>
     </DashboardLayoutV2>
   );
 }

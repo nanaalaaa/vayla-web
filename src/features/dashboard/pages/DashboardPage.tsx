@@ -1,8 +1,8 @@
 import { KPI_ITEMS } from "@/data/dashboard";
-import { ActivityChart } from "./dashboard/ActivityChart";
-import { TxAndQueue } from "./dashboard/TxAndQueue";
-import { InProgressPanels } from "./dashboard/InProgressPanels";
-import { TokenStatus } from "./dashboard/TokenStatus";
+import { ActivityChart } from "../components/ActivityChart";
+import { TxAndQueue } from "../components/TxAndQueue";
+import { InProgressPanels } from "../components/InProgressPanels";
+import { TokenStatus } from "../components/TokenStatus";
 
 export default function DashboardPage() {
   return (

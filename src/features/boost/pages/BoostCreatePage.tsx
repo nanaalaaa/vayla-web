@@ -6,7 +6,7 @@ import {
   RadioOption,
   TagInput,
   UsdtInput,
-} from "@/components/boost/FormComponents";
+} from "../components/FormComponents";
 
 interface Props {
   onNavigate: (id: PageId) => void;

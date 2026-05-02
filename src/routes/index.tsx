@@ -12,23 +12,23 @@ function LoadingFallback() {
 
 const fallback = <LoadingFallback />;
 
-const DashboardPage = loadable(() => import("@/pages/DashboardPage"), { fallback });
-const DiscoveryPage = loadable(() => import("@/pages/DiscoveryPage"), { fallback });
-const TrackReviewPage = loadable(() => import("@/pages/discovery/TrackReviewPage"), { fallback });
-const VoteMonitorPage = loadable(() => import("@/pages/discovery/VoteMonitorPage"), { fallback });
-const RewardDistributionPage = loadable(() => import("@/pages/discovery/RewardDistributionPage"), { fallback });
-const ChallengeDetailPage = loadable(() => import("@/pages/discovery/ChallengeDetailPage"), { fallback });
-const DiscoveryChallengePage = loadable(() => import("@/pages/discovery/DiscoveryChallengePage"), { fallback });
-const GenreManagementPage = loadable(() => import("@/pages/discovery/GenreManagementPage"), { fallback });
-const CreateChallengePage = loadable(() => import("@/pages/discovery/CreateChallengePage"), { fallback });
-const BoostPage = loadable(() => import("@/pages/boost/BoostPage"), { fallback });
-const BoostProjectsPage = loadable(() => import("@/pages/boost/BoostProjectsPage"), { fallback });
-const BoostCreatePage = loadable(() => import("@/pages/boost/BoostCreatePage"), { fallback });
-const BoostDetailPage = loadable(() => import("@/pages/boost/BoostDetailPage"), { fallback });
-const BoostEditPage = loadable(() => import("@/pages/boost/BoostEditPage"), { fallback });
-const BoostParticipantsPage = loadable(() => import("@/pages/boost/BoostParticipantsPage"), { fallback });
-const BoostSettlementPage = loadable(() => import("@/pages/boost/BoostSettlementPage"), { fallback });
-const BoostRiskPage = loadable(() => import("@/pages/boost/BoostRiskPage"), { fallback });
+const DashboardPage = loadable(() => import("@/features/dashboard/pages/DashboardPage"), { fallback });
+const DiscoveryPage = loadable(() => import("@/features/discovery/pages/DiscoveryPage"), { fallback });
+const TrackReviewPage = loadable(() => import("@/features/discovery/pages/TrackReviewPage"), { fallback });
+const VoteMonitorPage = loadable(() => import("@/features/discovery/pages/VoteMonitorPage"), { fallback });
+const RewardDistributionPage = loadable(() => import("@/features/discovery/pages/RewardDistributionPage"), { fallback });
+const ChallengeDetailPage = loadable(() => import("@/features/discovery/pages/ChallengeDetailPage"), { fallback });
+const DiscoveryChallengePage = loadable(() => import("@/features/discovery/pages/DiscoveryChallengePage"), { fallback });
+const GenreManagementPage = loadable(() => import("@/features/discovery/pages/GenreManagementPage"), { fallback });
+const CreateChallengePage = loadable(() => import("@/features/discovery/pages/CreateChallengePage"), { fallback });
+const BoostPage = loadable(() => import("@/features/boost/pages/BoostPage"), { fallback });
+const BoostProjectsPage = loadable(() => import("@/features/boost/pages/BoostProjectsPage"), { fallback });
+const BoostCreatePage = loadable(() => import("@/features/boost/pages/BoostCreatePage"), { fallback });
+const BoostDetailPage = loadable(() => import("@/features/boost/pages/BoostDetailPage"), { fallback });
+const BoostEditPage = loadable(() => import("@/features/boost/pages/BoostEditPage"), { fallback });
+const BoostParticipantsPage = loadable(() => import("@/features/boost/pages/BoostParticipantsPage"), { fallback });
+const BoostSettlementPage = loadable(() => import("@/features/boost/pages/BoostSettlementPage"), { fallback });
+const BoostRiskPage = loadable(() => import("@/features/boost/pages/BoostRiskPage"), { fallback });
 
 
 export interface RouteConfig {
