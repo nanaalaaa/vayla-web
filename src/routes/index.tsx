@@ -1,23 +1,35 @@
+import loadable from "@loadable/component";
 import type { ComponentType } from "react";
 import type { PageId } from "@/types/navigation";
 
-import DashboardPage from "@/pages/DashboardPage";
-import DiscoveryPage from "@/pages/DiscoveryPage";
-import TrackReviewPage from "@/pages/discovery/TrackReviewPage";
-import VoteMonitorPage from "@/pages/discovery/VoteMonitorPage";
-import RewardDistributionPage from "@/pages/discovery/RewardDistributionPage";
-import ChallengeDetailPage from "@/pages/discovery/ChallengeDetailPage";
-import DiscoveryChallengePage from "@/pages/discovery/DiscoveryChallengePage";
-import GenreManagementPage from "@/pages/discovery/GenreManagementPage";
-import CreateChallengePage from "@/pages/discovery/CreateChallengePage";
-import BoostPage from "@/pages/boost/BoostPage";
-import BoostProjectsPage from "@/pages/boost/BoostProjectsPage";
-import BoostCreatePage from "@/pages/boost/BoostCreatePage";
-import BoostDetailPage from "@/pages/boost/BoostDetailPage";
-import BoostEditPage from "@/pages/boost/BoostEditPage";
-import BoostParticipantsPage from "@/pages/boost/BoostParticipantsPage";
-import BoostSettlementPage from "@/pages/boost/BoostSettlementPage";
-import BoostRiskPage from "@/pages/boost/BoostRiskPage";
+function LoadingFallback() {
+  return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#00C9A7] border-t-transparent" />
+    </div>
+  );
+}
+
+const fallback = <LoadingFallback />;
+
+const DashboardPage = loadable(() => import("@/pages/DashboardPage"), { fallback });
+const DiscoveryPage = loadable(() => import("@/pages/DiscoveryPage"), { fallback });
+const TrackReviewPage = loadable(() => import("@/pages/discovery/TrackReviewPage"), { fallback });
+const VoteMonitorPage = loadable(() => import("@/pages/discovery/VoteMonitorPage"), { fallback });
+const RewardDistributionPage = loadable(() => import("@/pages/discovery/RewardDistributionPage"), { fallback });
+const ChallengeDetailPage = loadable(() => import("@/pages/discovery/ChallengeDetailPage"), { fallback });
+const DiscoveryChallengePage = loadable(() => import("@/pages/discovery/DiscoveryChallengePage"), { fallback });
+const GenreManagementPage = loadable(() => import("@/pages/discovery/GenreManagementPage"), { fallback });
+const CreateChallengePage = loadable(() => import("@/pages/discovery/CreateChallengePage"), { fallback });
+const BoostPage = loadable(() => import("@/pages/boost/BoostPage"), { fallback });
+const BoostProjectsPage = loadable(() => import("@/pages/boost/BoostProjectsPage"), { fallback });
+const BoostCreatePage = loadable(() => import("@/pages/boost/BoostCreatePage"), { fallback });
+const BoostDetailPage = loadable(() => import("@/pages/boost/BoostDetailPage"), { fallback });
+const BoostEditPage = loadable(() => import("@/pages/boost/BoostEditPage"), { fallback });
+const BoostParticipantsPage = loadable(() => import("@/pages/boost/BoostParticipantsPage"), { fallback });
+const BoostSettlementPage = loadable(() => import("@/pages/boost/BoostSettlementPage"), { fallback });
+const BoostRiskPage = loadable(() => import("@/pages/boost/BoostRiskPage"), { fallback });
+
 
 export interface RouteConfig {
   path: string;
@@ -25,34 +37,32 @@ export interface RouteConfig {
   label: string;
   icon?: string;
   badge?: number;
-  /** Present only for routes that appear as sidebar nav items */
   section?: string;
   title: string;
   breadcrumb: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  show: boolean;
+  children?: RouteConfig[];
   component: ComponentType<any>;
 }
 
-/** Maps every PageId to its URL path — used by onNavigate shim in App.tsx */
-export const PAGE_ID_TO_PATH: Record<PageId, string> = {
-  dashboard: "/",
-  discovery: "/discovery",
-  "discovery-track-review": "/discovery/track-review",
-  "discovery-vote-monitor": "/discovery/vote-monitor",
-  "discovery-reward-distribution": "/discovery/reward-distribution",
-  "discovery-challenge-detail": "/discovery/challenge-detail",
-  "discovery-challenge-management": "/discovery/challenge-management",
-  "discovery-genre-management": "/discovery/genre-management",
-  "discovery-create": "/discovery/create",
-  boost: "/boost",
-  "boost-projects": "/boost/projects",
-  "boost-create": "/boost/create",
-  "boost-detail": "/boost/detail",
-  "boost-edit": "/boost/edit",
-  "boost-participants": "/boost/participants",
-  "boost-settlement": "/boost/settlement",
-  "boost-risk": "/boost/risk",
-};
+export function flattenRoutes(
+  routeList: RouteConfig[],
+  parentPath = "",
+): RouteConfig[] {
+  return routeList.flatMap((route) => {
+    const fullPath = route.path.startsWith("/")
+      ? route.path
+      : `${parentPath}/${route.path}`.replace(/\/+/g, "/");
+
+    const withFullPath: RouteConfig = { ...route, path: fullPath };
+
+    return [
+      withFullPath,
+      ...(route.children ? flattenRoutes(route.children, fullPath) : []),
+    ];
+  });
+}
+
 
 export const routes: RouteConfig[] = [
   {
@@ -62,7 +72,8 @@ export const routes: RouteConfig[] = [
     icon: "📊",
     section: "Overview",
     title: "Dashboard",
-    breadcrumb: "Overview · Platform Status",
+    breadcrumb: "Overview",
+    show: true,
     component: DashboardPage,
   },
 
@@ -74,64 +85,74 @@ export const routes: RouteConfig[] = [
     badge: 8,
     section: "Platform",
     title: "Discovery Management",
-    breadcrumb: "Platform → Discovery",
+    breadcrumb: "Discovery",
+    show: true,
     component: DiscoveryPage,
-  },
-  {
-    path: "/discovery/track-review",
-    pageId: "discovery-track-review",
-    label: "Track Review",
-    title: "Track Review",
-    breadcrumb: "Platform → Discovery → Track Review",
-    component: TrackReviewPage,
-  },
-  {
-    path: "/discovery/vote-monitor",
-    pageId: "discovery-vote-monitor",
-    label: "Vote Monitor",
-    title: "Vote Monitor",
-    breadcrumb: "Platform → Discovery → Vote Monitor",
-    component: VoteMonitorPage,
-  },
-  {
-    path: "/discovery/reward-distribution",
-    pageId: "discovery-reward-distribution",
-    label: "Reward Distribution",
-    title: "Reward Distribution",
-    breadcrumb: "Platform → Discovery → Rewards",
-    component: RewardDistributionPage,
-  },
-  {
-    path: "/discovery/challenge-detail",
-    pageId: "discovery-challenge-detail",
-    label: "Challenge Detail",
-    title: "Challenge Detail",
-    breadcrumb: "Platform → Discovery → Challenge Detail",
-    component: ChallengeDetailPage,
-  },
-  {
-    path: "/discovery/challenge-management",
-    pageId: "discovery-challenge-management",
-    label: "Discovery Challenge",
-    title: "Discovery Challenge",
-    breadcrumb: "Platform → Discovery → Challenges",
-    component: DiscoveryChallengePage,
-  },
-  {
-    path: "/discovery/genre-management",
-    pageId: "discovery-genre-management",
-    label: "Genre Management",
-    title: "Genre Management",
-    breadcrumb: "Platform → Discovery → Genres",
-    component: GenreManagementPage,
-  },
-  {
-    path: "/discovery/create",
-    pageId: "discovery-create",
-    label: "Create Challenge",
-    title: "Create Challenge",
-    breadcrumb: "Platform → Discovery → New Challenge",
-    component: CreateChallengePage,
+    children: [
+      {
+        path: "track-review",
+        pageId: "discovery-track-review",
+        label: "Track Review",
+        title: "Track Review",
+        breadcrumb: "Discovery → Track Review",
+        show: true,
+        component: TrackReviewPage,
+      },
+      {
+        path: "vote-monitor",
+        pageId: "discovery-vote-monitor",
+        label: "Vote Monitor",
+        title: "Vote Monitor",
+        breadcrumb: "Discovery → Vote Monitor",
+        show: true,
+        component: VoteMonitorPage,
+      },
+      {
+        path: "reward-distribution",
+        pageId: "discovery-reward-distribution",
+        label: "Reward Distribution",
+        title: "Reward Distribution",
+        breadcrumb: "Discovery → Rewards",
+        show: true,
+        component: RewardDistributionPage,
+      },
+      {
+        path: "challenge-detail",
+        pageId: "discovery-challenge-detail",
+        label: "Challenge Detail",
+        title: "Challenge Detail",
+        breadcrumb: "Discovery → Challenge Detail",
+        show: false,
+        component: ChallengeDetailPage,
+      },
+      {
+        path: "challenge-management",
+        pageId: "discovery-challenge-management",
+        label: "Discovery Challenge",
+        title: "Discovery Challenge",
+        breadcrumb: "Discovery → Challenges",
+        show: true,
+        component: DiscoveryChallengePage,
+      },
+      {
+        path: "genre-management",
+        pageId: "discovery-genre-management",
+        label: "Genre Management",
+        title: "Genre Management",
+        breadcrumb: "Discovery → Genres",
+        show: true,
+        component: GenreManagementPage,
+      },
+      {
+        path: "create",
+        pageId: "discovery-create",
+        label: "Create Challenge",
+        title: "Create Challenge",
+        breadcrumb: "Discovery → New Challenge",
+        show: false,
+        component: CreateChallengePage,
+      },
+    ],
   },
 
   {
@@ -141,64 +162,78 @@ export const routes: RouteConfig[] = [
     icon: "🚀",
     section: "Platform",
     title: "Boost Management",
-    breadcrumb: "Service Management → Boost (USDT Crowdfunding)",
+    breadcrumb: "Boost",
+    show: true,
     component: BoostPage,
-  },
-  {
-    path: "/boost/projects",
-    pageId: "boost-projects",
-    label: "Boost Projects",
-    title: "Boost Projects",
-    breadcrumb: "Service Management → Boost → Project Management",
-    component: BoostProjectsPage,
-  },
-  {
-    path: "/boost/create",
-    pageId: "boost-create",
-    label: "Create New Boost Project",
-    title: "Create New Boost Project",
-    breadcrumb: "Service Management → Boost → Create New Project",
-    component: BoostCreatePage,
-  },
-  {
-    path: "/boost/detail",
-    pageId: "boost-detail",
-    label: "Boost Detail",
-    title: "Waterbomb Festival 2026",
-    breadcrumb: "Service Management → Boost → Project Detail",
-    component: BoostDetailPage,
-  },
-  {
-    path: "/boost/edit",
-    pageId: "boost-edit",
-    label: "Edit Boost Project",
-    title: "Edit Boost Project",
-    breadcrumb: "Service Management → Boost → Edit Project",
-    component: BoostEditPage,
-  },
-  {
-    path: "/boost/participants",
-    pageId: "boost-participants",
-    label: "Participation Management",
-    title: "Participation Management",
-    breadcrumb: "Service Management → Boost → Participation Status → Details",
-    component: BoostParticipantsPage,
-  },
-  {
-    path: "/boost/settlement",
-    pageId: "boost-settlement",
-    label: "Settlement Details",
-    title: "Settlement Details",
-    breadcrumb:
-      "Service Management → Boost → Settlement Management → Settlement Details",
-    component: BoostSettlementPage,
-  },
-  {
-    path: "/boost/risk",
-    pageId: "boost-risk",
-    label: "Risk Monitoring",
-    title: "Risk Monitoring",
-    breadcrumb: "Service Management → Boost → Risk Monitoring",
-    component: BoostRiskPage,
+    children: [
+      {
+        path: "projects",
+        pageId: "boost-projects",
+        label: "Boost Projects",
+        title: "Boost Projects",
+        breadcrumb: "Boost → Project Management",
+        show: true,
+        component: BoostProjectsPage,
+      },
+      {
+        path: "create",
+        pageId: "boost-create",
+        label: "Create New Boost Project",
+        title: "Create New Boost Project",
+        breadcrumb: "Boost → Create New Project",
+        show: false,
+        component: BoostCreatePage,
+      },
+      {
+        path: "detail",
+        pageId: "boost-detail",
+        label: "Boost Detail",
+        title: "Waterbomb Festival 2026",
+        breadcrumb: "Boost → Project Detail",
+        show: false,
+        component: BoostDetailPage,
+      },
+      {
+        path: "edit",
+        pageId: "boost-edit",
+        label: "Edit Boost Project",
+        title: "Edit Boost Project",
+        breadcrumb: "Boost → Edit Project",
+        show: false,
+        component: BoostEditPage,
+      },
+      {
+        path: "participants",
+        pageId: "boost-participants",
+        label: "Participation Management",
+        title: "Participation Management",
+        breadcrumb: "Boost → Participation Status → Details",
+        show: false,
+        component: BoostParticipantsPage,
+      },
+      {
+        path: "settlement",
+        pageId: "boost-settlement",
+        label: "Settlement Details",
+        title: "Settlement Details",
+        breadcrumb:
+          "Boost → Settlement Management → Settlement Details",
+        show: false,
+        component: BoostSettlementPage,
+      },
+      {
+        path: "risk",
+        pageId: "boost-risk",
+        label: "Risk Monitoring",
+        title: "Risk Monitoring",
+        breadcrumb: "Boost → Risk Monitoring",
+        show: true,
+        component: BoostRiskPage,
+      },
+    ],
   },
 ];
+
+export const PAGE_ID_TO_PATH = Object.fromEntries(
+  flattenRoutes(routes).map((r) => [r.pageId, r.path]),
+) as Record<PageId, string>;

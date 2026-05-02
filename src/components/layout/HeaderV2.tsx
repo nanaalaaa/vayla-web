@@ -1,11 +1,13 @@
 import { Bell, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { routes } from "@/routes";
+import { routes, flattenRoutes } from "@/routes";
+
+const flatRoutes = flattenRoutes(routes);
 
 export function HeaderV2() {
   const { pathname } = useLocation();
-  const route = routes.find((r) => r.path === pathname) ?? routes[0];
+  const route = flatRoutes.find((r) => r.path === pathname) ?? flatRoutes[0];
 
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8">

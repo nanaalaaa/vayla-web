@@ -6,7 +6,7 @@ import { routes } from "@/routes";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-const navRoutes = routes.filter((r) => r.section);
+const navRoutes = routes.filter((r) => r.show && r.section);
 const NAV_SECTIONS = [...new Set(navRoutes.map((r) => r.section!))];
 
 export function SidebarV2() {

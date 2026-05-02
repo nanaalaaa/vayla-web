@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { DashboardLayoutV2 } from "./components/layout/DashboardLayoutV2";
-import { routes, PAGE_ID_TO_PATH } from "./routes";
+import { routes, flattenRoutes, PAGE_ID_TO_PATH } from "./routes";
 import type { PageId } from "./types/navigation";
 
 function NavigatableRoute({
@@ -14,6 +14,8 @@ function NavigatableRoute({
   return <Component onNavigate={onNavigate} />;
 }
 
+const flatRoutes = flattenRoutes(routes);
+
 export default function AppV2() {
   const location = useLocation();
 
@@ -24,7 +26,7 @@ export default function AppV2() {
         className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
       >
         <Routes>
-          {routes.map((route) => (
+          {flatRoutes.map((route) => (
             <Route
               key={route.path}
               path={route.path}
