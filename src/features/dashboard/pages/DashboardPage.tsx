@@ -7,7 +7,6 @@ import { TokenStatus } from "../components/TokenStatus";
 export default function DashboardPage() {
   return (
     <div>
-      {/* KPI row */}
       <div className="grid grid-cols-6 gap-4 mb-7">
         {KPI_ITEMS.map((k, i) => (
           <div

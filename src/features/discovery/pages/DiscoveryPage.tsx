@@ -35,7 +35,6 @@ export default function DiscoveryPage({ onNavigate }: Props) {
 
   return (
     <div>
-      {/* Tab bar */}
       <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1 mb-6 w-fit">
         {TABS.map((tab) => (
           <div key={tab.key} className="flex items-center gap-0">
@@ -65,14 +64,12 @@ export default function DiscoveryPage({ onNavigate }: Props) {
         ))}
       </div>
 
-      {/* KPI row */}
       <div className="grid grid-cols-5 gap-4 mb-6">
         {KPI_CARDS.map((k) => (
           <KpiCard key={k.label} {...k} />
         ))}
       </div>
 
-      {/* Main 2-col layout */}
       <div className="grid gap-6 mb-6" style={{ gridTemplateColumns: "2fr 1fr" }}>
         <ActiveChallenges onNavigate={onNavigate} />
         <div>

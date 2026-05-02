@@ -8,12 +8,8 @@ const queryClient = new QueryClient();
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <StrictMode>
-      {/* scaffold only — no custom QueryClient config yet */}
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          {/* ADD FUTURE PROVIDERS HERE: auth, theme, toast, i18n */}
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
     </StrictMode>
   );
